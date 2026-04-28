@@ -33,7 +33,6 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        logger.info("DataInitializer is running...");
         // 1. Create Default Admin
         if (!userRepository.existsByEmail("admin@talentbridge.com")) {
             User admin = new User();
@@ -59,7 +58,8 @@ public class DataInitializer implements CommandLineRunner {
         User zomato = createEmployer("Zomato", "hr@zomato.com");
 
         // 3. Create Sample Jobs (at least 25-30)
-        List<Job> jobs = new ArrayList<>();
+        if (jobRepository.count() < 10) { 
+            List<Job> jobs = new ArrayList<>();
             
             // IT Sector
             jobs.add(createJob(infosys, "Software Developer – Java", "Bangalore", 600000.0, 1000000.0, "Fresher", "Java, Spring Boot, MySQL", "Develop and maintain robust web applications.", JobType.FULL_TIME));
@@ -104,6 +104,7 @@ public class DataInitializer implements CommandLineRunner {
             jobRepository.saveAll(jobs);
             logger.info("30 Sample jobs created across multiple sectors.");
         }
+    }
 
     private User createEmployer(String name, String email) {
         return userRepository.findByEmail(email).orElseGet(() -> {
