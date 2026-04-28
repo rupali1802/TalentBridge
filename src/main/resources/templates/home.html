@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head('Home')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Find Your <span>Dream Career</span> Today</h1>
+        <p>TalentBridge connects ambitious professionals with top employers. Discover opportunities that match your skills and aspirations.</p>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+            <a th:href="@{/jobs}" class="btn btn-primary btn-lg">Browse Jobs</a>
+            <a sec:authorize="isAnonymous()" th:href="@{/auth/register}" class="btn btn-lg" style="background:rgba(255,255,255,0.15);color:#fff;backdrop-filter:blur(4px)">Create Account</a>
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat"><div class="num" th:text="${totalJobs}">0</div><div class="label">Active Jobs</div></div>
+            <div class="hero-stat"><div class="num" th:text="${totalCompanies > 0 ? totalCompanies : '50+'}">500+</div><div class="label">Companies</div></div>
+            <div class="hero-stat"><div class="num" th:text="${totalStudents > 0 ? totalStudents : '100+'}">10K+</div><div class="label">Candidates</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- What TalentBridge Offers Section -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">What TalentBridge Offers</h2>
+        <p class="section-subtitle">Everything you need to find your next career move or top talent.</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <h3>Smart Job Search</h3>
+                <p>Filter by location, type, salary, and experience to find the perfect fit.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Easy Application</h3>
+                <p>Apply to any job in just one click with your saved professional profile.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3>Resume Upload</h3>
+                <p>Upload and manage multiple resumes to showcase your best professional self.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⭐</div>
+                <h3>Saved Jobs</h3>
+                <p>Keep track of interesting opportunities and apply when you're ready.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Timeline Tracking</h3>
+                <p>Monitor your application status in real-time with our visual timeline.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔔</div>
+                <h3>Email Notifications</h3>
+                <p>Stay updated on new jobs and application results with instant alerts.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💼</div>
+                <h3>Employer Portal</h3>
+                <p>Powerful tools for employers to post jobs and manage candidate flow.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h3>Admin Analytics</h3>
+                <p>Full platform oversight and data-driven insights for administrators.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Latest Opportunities -->
+<section class="section" style="background:var(--bg-input)">
+    <div class="container">
+        <h2 class="section-title">Latest Opportunities</h2>
+        <p class="section-subtitle">Fresh openings posted by leading employers</p>
+        <div class="jobs-grid" th:if="${featuredJobs != null and !featuredJobs.isEmpty()}">
+            <div th:each="job : ${featuredJobs}" class="job-card">
+                <div class="job-card-header">
+                    <div>
+                        <div class="job-card-title" th:text="${job.title}">Job Title</div>
+                        <div class="job-card-company" th:text="${job.employer.company != null ? job.employer.company : job.employer.fullName}">Company</div>
+                    </div>
+                    <span class="badge badge-primary" th:text="${job.jobType.displayName}">Type</span>
+                </div>
+                <div class="job-card-meta">
+                    <span class="badge badge-secondary">📍 <span th:text="${job.location}">Location</span></span>
+                    <span class="badge badge-secondary">💰 <span th:text="${job.salaryDisplay}">Salary</span></span>
+                    <span th:if="${job.experienceLevel}" class="badge badge-secondary">🎯 <span th:text="${job.experienceLevel}">Level</span></span>
+                </div>
+                <p class="text-sm text-muted" th:text="${#strings.abbreviate(job.description, 120)}">Description</p>
+                <div class="job-card-footer">
+                    <span class="text-xs text-muted" th:text="'Posted ' + ${#temporals.format(job.postedAt, 'MMM dd, yyyy')}">Date</span>
+                    <a th:href="@{/jobs/{id}(id=${job.id})}" class="btn btn-primary btn-sm">View Details</a>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-3" th:if="${featuredJobs != null and !featuredJobs.isEmpty()}">
+            <a th:href="@{/jobs}" class="btn btn-outline">View All Jobs →</a>
+        </div>
+        <div class="empty-state" th:if="${featuredJobs == null or featuredJobs.isEmpty()}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <h3>No jobs posted yet</h3>
+            <p>Be the first to post an opportunity on TalentBridge!</p>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">Your journey to a new career simplified in four simple steps.</p>
+        <div class="how-it-works">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <h4>Create Account</h4>
+                <p>Sign up as a student or employer to get started with your journey.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <h4>Search Jobs</h4>
+                <p>Browse through thousands of jobs filtered to match your specific skills.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <h4>Apply Easily</h4>
+                <p>Submit your application with one click using your saved professional profile.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">4</div>
+                <h4>Get Hired</h4>
+                <p>Connect with employers, track your status, and land your dream role.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="section" style="background:var(--bg-input)">
+    <div class="container">
+        <h2 class="section-title">Success Stories</h2>
+        <p class="section-subtitle">Hear from professionals who found their path via TalentBridge.</p>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <p class="testimonial-text">TalentBridge made my job search incredibly smooth. The timeline tracking kept me informed at every step of my application.</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">A</div>
+                    <div class="author-info">
+                        <h5>Arjun Mehta</h5>
+                        <p>Software Engineer at TechCorp</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <p class="testimonial-text">As an employer, finding qualified talent has never been easier. The dashboard provides all the insights we need to hire fast.</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">S</div>
+                    <div class="author-info">
+                        <h5>Sarah Jenkins</h5>
+                        <p>HR Manager at Innovate Solutions</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <p class="testimonial-text">The resume management feature is a game-changer. I could tailor my applications effortlessly and landed an internship in weeks.</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">P</div>
+                    <div class="author-info">
+                        <h5>Priya Sharma</h5>
+                        <p>Final Year Student at IIT Delhi</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="container" style="padding: 0 2rem;">
+    <div class="cta-section">
+        <div class="cta-content">
+            <h2>Start Your Career Journey Today</h2>
+            <p>Join thousands of professionals and top companies already using TalentBridge to connect and grow.</p>
+            <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+                <a th:href="@{/auth/register}" class="btn btn-secondary btn-lg" style="background:#fff;color:var(--primary)">Get Started Now</a>
+                <a th:href="@{/jobs}" class="btn btn-lg" style="border:1.5px solid rgba(255,255,255,0.4);color:#fff">Learn More</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/header :: footer}" th:if="${false}"></footer> <!-- Placeholder if needed -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

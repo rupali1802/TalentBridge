@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Browse Jobs')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+<div class="app-layout">
+    <aside th:replace="~{fragments/sidebar :: student-sidebar}"></aside>
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1>Explore Opportunities</h1>
+                <p class="text-muted"><span th:text="${totalResults}">0</span> professional roles available for you</p>
+            </div>
+        </div>
+
+        <div class="browse-container">
+            <!-- Sidebar Filters -->
+            <div class="browse-sidebar">
+                <div class="card">
+                    <div class="card-header">Filters</div>
+                    <div class="card-body">
+                        <form th:action="@{/student/browse-jobs}" method="get" id="filterForm">
+                            <div class="form-group">
+                                <label class="form-label">Search Keyword</label>
+                                <input type="text" name="keyword" th:value="${keyword}" class="form-control" placeholder="Job title, skills...">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Location</label>
+                                <select name="location" class="form-control">
+                                    <option value="">All Locations</option>
+                                    <option value="Bangalore" th:selected="${location == 'Bangalore'}">Bangalore</option>
+                                    <option value="Hyderabad" th:selected="${location == 'Hyderabad'}">Hyderabad</option>
+                                    <option value="Mumbai" th:selected="${location == 'Mumbai'}">Mumbai</option>
+                                    <option value="Chennai" th:selected="${location == 'Chennai'}">Chennai</option>
+                                    <option value="Delhi" th:selected="${location == 'Delhi'}">Delhi</option>
+                                    <option value="Pune" th:selected="${location == 'Pune'}">Pune</option>
+                                    <option value="Remote" th:selected="${location == 'Remote'}">Remote</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Job Type</label>
+                                <div class="filter-options">
+                                    <label class="checkbox-label" th:each="jt : ${jobTypes}">
+                                        <input type="radio" name="jobType" th:value="${jt}" th:checked="${jobType == jt}"> 
+                                        <span th:text="${jt.displayName}">Full Time</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="radio" name="jobType" value="" th:checked="${jobType == null}"> 
+                                        <span>Any Type</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Experience Level</label>
+                                <select name="experienceLevel" class="form-control">
+                                    <option value="">All Experience</option>
+                                    <option value="Fresher" th:selected="${experienceLevel == 'Fresher'}">Fresher</option>
+                                    <option value="1–3 years" th:selected="${experienceLevel == '1–3 years'}">1–3 years</option>
+                                    <option value="Mid-level" th:selected="${experienceLevel == 'Mid-level'}">Mid-level</option>
+                                    <option value="Senior" th:selected="${experienceLevel == 'Senior'}">Senior Level</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Salary Range (LPA)</label>
+                                <div class="salary-inputs">
+                                    <input type="number" name="salaryMin" th:value="${salaryMin}" class="form-control" placeholder="Min">
+                                    <span class="to">to</span>
+                                    <input type="number" name="salaryMax" th:value="${salaryMax}" class="form-control" placeholder="Max">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-block mt-2">Apply Filters</button>
+                            <a th:href="@{/student/browse-jobs}" class="btn btn-outline btn-block mt-1">Reset All</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Job Listings -->
+            <div class="browse-content">
+                <div th:if="${jobs.isEmpty()}" class="empty-state card py-5">
+                    <div style="font-size:3rem;margin-bottom:1rem">🔍</div>
+                    <h3>No matching jobs found</h3>
+                    <p>Try adjusting your filters or search terms to find what you're looking for.</p>
+                </div>
+
+                <div th:if="${!jobs.isEmpty()}" class="jobs-grid">
+                    <div th:each="job : ${jobs}" class="job-card interactive">
+                        <div class="job-card-header">
+                            <div class="company-logo-placeholder" th:text="${#strings.substring(job.employer.company != null ? job.employer.company : job.employer.fullName, 0, 1)}">G</div>
+                            <div class="header-info">
+                                <h3 class="job-title" th:text="${job.title}">Software Engineer</h3>
+                                <div class="company-name" th:text="${job.employer.company != null ? job.employer.company : job.employer.fullName}">Google</div>
+                            </div>
+                            <div class="job-type-badge" th:text="${job.jobType.displayName}">Full-time</div>
+                        </div>
+                        
+                        <div class="job-details-brief">
+                            <div class="detail-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                <span th:text="${job.location}">Bangalore</span>
+                            </div>
+                            <div class="detail-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span th:text="${job.salaryDisplay}">₹6-10 LPA</span>
+                            </div>
+                            <div class="detail-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                <span th:text="${job.experienceLevel}">Fresher</span>
+                            </div>
+                        </div>
+
+                        <div class="skills-preview">
+                            <span th:each="skill : ${#strings.arraySplit(job.skillsRequired, ',')}" class="skill-tag" th:text="${#strings.trim(skill)}">Java</span>
+                        </div>
+
+                        <div class="job-card-footer">
+                            <span class="posted-date">Posted <span th:text="${#temporals.format(job.postedAt,'MMM dd')}">Date</span></span>
+                            <a th:href="@{/student/job/{id}(id=${job.id})}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

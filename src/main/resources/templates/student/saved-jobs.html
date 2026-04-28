@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Saved Jobs')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+<div class="app-layout">
+    <aside th:replace="~{fragments/sidebar :: student-sidebar}"></aside>
+    <main class="main-content">
+        <div class="page-header"><h1>Saved Jobs</h1><p>Your bookmarked job listings</p></div>
+
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+        <div th:if="${savedJobs.isEmpty()}" class="empty-state"><h3>No saved jobs</h3><p>Save jobs you're interested in while browsing.</p>
+            <a th:href="@{/student/browse-jobs}" class="btn btn-primary mt-2">Browse Jobs</a></div>
+
+        <div th:if="${!savedJobs.isEmpty()}" class="jobs-grid">
+            <div th:each="sj : ${savedJobs}" class="job-card">
+                <div class="job-card-header">
+                    <div><div class="job-card-title" th:text="${sj.job.title}">Title</div>
+                        <div class="job-card-company" th:text="${sj.job.employer.company != null ? sj.job.employer.company : sj.job.employer.fullName}">Co</div></div>
+                    <span class="badge badge-primary" th:text="${sj.job.jobType.displayName}">Type</span>
+                </div>
+                <div class="job-card-meta">
+                    <span class="badge badge-secondary">📍 <span th:text="${sj.job.location}">Loc</span></span>
+                    <span class="badge badge-secondary">💰 <span th:text="${sj.job.salaryDisplay}">Sal</span></span>
+                </div>
+                <div class="job-card-footer">
+                    <a th:href="@{/student/job/{id}(id=${sj.job.id})}" class="btn btn-primary btn-sm">View</a>
+                    <form th:action="@{/student/unsave-job/{id}(id=${sj.job.id})}" method="post">
+                        <button type="submit" class="btn btn-outline btn-sm">Remove</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

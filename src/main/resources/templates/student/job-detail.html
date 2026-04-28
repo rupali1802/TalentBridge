@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Job Details')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+<div class="app-layout">
+    <aside th:replace="~{fragments/sidebar :: student-sidebar}"></aside>
+    <main class="main-content">
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <a th:href="@{/student/browse-jobs}" class="btn btn-secondary btn-sm mb-2">← Back to Jobs</a>
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem">
+            <div class="card">
+                <div class="card-body">
+                    <div class="flex-between mb-2">
+                        <div>
+                            <h1 style="font-size:1.5rem;font-weight:800" th:text="${job.title}">Title</h1>
+                            <p class="text-muted" th:text="${job.employer.company != null ? job.employer.company : job.employer.fullName}">Company</p>
+                        </div>
+                        <span class="badge badge-primary" style="font-size:0.85rem;padding:0.4rem 1rem" th:text="${job.jobType.displayName}">Type</span>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin:1.25rem 0">
+                        <span class="badge badge-secondary" style="font-size:0.85rem;padding:0.35rem 0.8rem">📍 <span th:text="${job.location}">Loc</span></span>
+                        <span class="badge badge-secondary" style="font-size:0.85rem;padding:0.35rem 0.8rem">💰 <span th:text="${job.salaryDisplay}">Sal</span></span>
+                        <span th:if="${job.experienceLevel}" class="badge badge-secondary" style="font-size:0.85rem;padding:0.35rem 0.8rem">🎯 <span th:text="${job.experienceLevel}">Lvl</span></span>
+                        <span th:if="${job.applicationDeadline}" class="badge badge-warning" style="font-size:0.85rem;padding:0.35rem 0.8rem">📅 Deadline: <span th:text="${job.applicationDeadline}">Date</span></span>
+                    </div>
+                    <hr style="border:none;border-top:1px solid var(--border);margin:1.25rem 0">
+                    <h3 style="font-size:1rem;font-weight:700;margin-bottom:0.75rem">Description</h3>
+                    <div style="white-space:pre-line;color:var(--text-secondary);font-size:0.9rem;line-height:1.7" th:text="${job.description}">Desc</div>
+
+                    <div th:if="${job.skillsRequired != null and !job.skillsRequired.isEmpty()}" style="margin-top:1.5rem">
+                        <h3 style="font-size:1rem;font-weight:700;margin-bottom:0.75rem">Skills Required</h3>
+                        <div style="display:flex;flex-wrap:wrap;gap:0.5rem">
+                            <span th:each="skill : ${job.skillsRequired.split(',')}" class="badge badge-info" th:text="${skill.trim()}" style="font-size:0.8rem;padding:0.3rem 0.7rem">Skill</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="card mb-2">
+                    <div class="card-body text-center">
+                        <div th:if="${hasApplied}">
+                            <span class="badge badge-success" style="font-size:0.95rem;padding:0.5rem 1.2rem">✓ Already Applied</span>
+                        </div>
+                        <div th:if="${user == null}">
+                            <a th:href="@{/auth/login}" class="btn btn-primary btn-block btn-lg">Sign in to Apply</a>
+                            <p class="text-xs text-muted mt-1">Create an account to start applying for jobs.</p>
+                        </div>
+                        <form th:if="${!hasApplied and user != null}" th:action="@{/student/apply/{id}(id=${job.id})}" method="post">
+                            <button type="submit" class="btn btn-primary btn-block btn-lg">Apply Now</button>
+                        </form>
+                        <form th:if="${user != null}" th:action="@{/student/save-job/{id}(id=${job.id})}" method="post" class="mt-1">
+                            <button type="submit" class="btn btn-outline btn-block" th:text="${isSaved ? '★ Unsave Job' : '☆ Save Job'}">Save</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">Job Info</div>
+                    <div class="card-body">
+                        <div class="mb-1"><span class="text-sm fw-600">Posted:</span> <span class="text-sm" th:text="${#temporals.format(job.postedAt,'MMM dd, yyyy')}">-</span></div>
+                        <div class="mb-1"><span class="text-sm fw-600">Type:</span> <span class="text-sm" th:text="${job.jobType.displayName}">-</span></div>
+                        <div class="mb-1"><span class="text-sm fw-600">Location:</span> <span class="text-sm" th:text="${job.location}">-</span></div>
+                        <div class="mb-1"><span class="text-sm fw-600">Salary:</span> <span class="text-sm" th:text="${job.salaryDisplay}">-</span></div>
+                        <div th:if="${job.applicationDeadline}" class="mb-1"><span class="text-sm fw-600">Deadline:</span> <span class="text-sm" th:text="${job.applicationDeadline}">-</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Access Denied')}"></head>
+<body>
+<div class="auth-wrapper">
+    <div class="auth-card text-center">
+        <div style="font-size:4rem;margin-bottom:1rem">🚫</div>
+        <h2>403 — Access Denied</h2>
+        <p class="subtitle" th:text="${errorMessage != null ? errorMessage : 'You do not have permission to access this page.'}">Forbidden</p>
+        <a href="/" class="btn btn-primary mt-2">Go to Homepage</a>
+    </div>
+</div>
+</body>
+</html>

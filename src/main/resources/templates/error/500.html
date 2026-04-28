@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Server Error')}"></head>
+<body>
+<div class="auth-wrapper">
+    <div class="auth-card text-center">
+        <div style="font-size:4rem;margin-bottom:1rem">⚠️</div>
+        <h2>500 — Server Error</h2>
+        <p class="subtitle" th:text="${errorMessage}">An unexpected error occurred. Please try again later.</p>
+        <div th:if="${errorType}" class="alert alert-danger text-left" style="font-family:monospace;font-size:0.85rem">
+            <strong>Error:</strong> <span th:text="${errorType}">Exception</span><br/>
+            <strong>Details:</strong> <span th:text="${errorMessage}">Message</span>
+        </div>
+        <a href="/" class="btn btn-primary mt-2">Go to Homepage</a>
+    </div>
+</div>
+</body>
+</html>

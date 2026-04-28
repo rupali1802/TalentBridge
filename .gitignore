@@ -1,0 +1,9 @@
+/target/
+/.idea/
+/.vscode/
+/*.log
+/uploads/resumes/*
+!.gitkeep
+.DS_Store
+node_modules/
+.env

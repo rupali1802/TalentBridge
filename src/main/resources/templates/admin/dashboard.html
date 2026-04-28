@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Admin Dashboard')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+<div class="app-layout">
+    <aside th:replace="~{fragments/sidebar :: admin-sidebar}"></aside>
+    <main class="main-content">
+        <div class="page-header"><h1>Admin Dashboard</h1><p>Platform overview and analytics</p></div>
+
+        <div class="stats-grid">
+            <div class="stat-card indigo"><div class="stat-value" th:text="${totalUsers}">0</div><div class="stat-label">Total Users</div></div>
+            <div class="stat-card blue"><div class="stat-value" th:text="${totalStudents}">0</div><div class="stat-label">Students</div></div>
+            <div class="stat-card purple"><div class="stat-value" th:text="${totalEmployers}">0</div><div class="stat-label">Employers</div></div>
+            <div class="stat-card green"><div class="stat-value" th:text="${totalJobs}">0</div><div class="stat-label">Total Jobs</div></div>
+            <div class="stat-card orange"><div class="stat-value" th:text="${totalApplications}">0</div><div class="stat-label">Applications</div></div>
+            <div class="stat-card rose"><div class="stat-value" th:text="${shortlistedCount}">0</div><div class="stat-label">Shortlisted</div></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Recent Platform Activity</div>
+            <div class="card-body" th:if="${recentActivity.isEmpty()}">
+                <div class="empty-state"><h3>No activity yet</h3><p>Activity will appear here as users interact with the platform.</p></div>
+            </div>
+            <div th:if="${!recentActivity.isEmpty()}" class="table-wrapper">
+                <table>
+                    <thead><tr><th>User</th><th>Action</th><th>Details</th><th>Time</th></tr></thead>
+                    <tbody>
+                        <tr th:each="log : ${recentActivity}" th:if="${logStat.index < 15}">
+                            <td class="fw-600" th:text="${log.user.fullName}">User</td>
+                            <td><span class="badge badge-info" th:text="${log.action}">Action</span></td>
+                            <td class="text-sm" th:text="${log.details}">Details</td>
+                            <td class="text-sm text-muted" th:text="${#temporals.format(log.timestamp,'MMM dd, HH:mm')}">Time</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${!recentActivity.isEmpty()}" class="card-footer text-right">
+                <a th:href="@{/admin/activity-log}" class="btn btn-outline btn-sm">View Full Activity Log →</a>
+            </div>
+        </div>
+    </main>
+</div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

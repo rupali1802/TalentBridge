@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title th:text="${title} + ' — TalentBridge'">TalentBridge</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<!-- Navbar Fragment -->
+<nav th:fragment="navbar" class="navbar">
+    <a href="/" class="navbar-brand">TalentBridge</a>
+    <ul class="navbar-nav">
+        <li sec:authorize="isAnonymous()"><a th:href="@{/}">Home</a></li>
+        <li sec:authorize="isAnonymous()"><a th:href="@{/jobs}">Browse Jobs</a></li>
+        <li sec:authorize="hasRole('STUDENT')"><a th:href="@{/student/dashboard}">Dashboard</a></li>
+        <li sec:authorize="hasRole('STUDENT')"><a th:href="@{/student/browse-jobs}">Browse Jobs</a></li>
+        <li sec:authorize="hasRole('STUDENT')"><a th:href="@{/student/my-applications}">My Applications</a></li>
+        <li sec:authorize="hasRole('STUDENT')"><a th:href="@{/student/saved-jobs}">Saved Jobs</a></li>
+        <li sec:authorize="hasRole('EMPLOYER')"><a th:href="@{/employer/dashboard}">Dashboard</a></li>
+        <li sec:authorize="hasRole('EMPLOYER')"><a th:href="@{/employer/my-jobs}">My Jobs</a></li>
+        <li sec:authorize="hasRole('EMPLOYER')"><a th:href="@{/employer/post-job}">Post Job</a></li>
+        <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+        <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin/manage-users}">Users</a></li>
+        <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin/manage-jobs}">Jobs</a></li>
+    </ul>
+    <div class="nav-actions">
+        <div sec:authorize="isAuthenticated()" style="position:relative">
+            <div class="notif-bell" id="notifBell">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                <span class="notif-badge" th:if="${unreadCount != null and unreadCount > 0}" th:text="${unreadCount}">0</span>
+            </div>
+            <div class="notif-dropdown" id="notifDropdown">
+                <div class="notif-dropdown-header">
+                    <h4>Notifications</h4>
+                    <a href="javascript:void(0)" id="markAllRead" class="text-sm" style="color:var(--primary)">Mark all read</a>
+                </div>
+                <div th:if="${notifications != null}" th:each="n : ${notifications}">
+                    <div class="notif-item" th:classappend="${!n.isRead()} ? 'unread' : ''">
+                        <h5 th:text="${n.title}">Title</h5>
+                        <p th:text="${n.message}">Message</p>
+                        <span class="time" th:text="${#temporals.format(n.createdAt,'MMM dd, HH:mm')}">Time</span>
+                    </div>
+                </div>
+                <div th:if="${notifications == null or #lists.isEmpty(notifications)}" style="padding:1.5rem;text-align:center;color:var(--text-muted);font-size:0.85rem;">No notifications</div>
+            </div>
+        </div>
+        <span sec:authorize="isAuthenticated()" class="text-sm fw-600" th:text="${#authentication.name}" style="color:var(--text-secondary)">user</span>
+        <a sec:authorize="isAnonymous()" th:href="@{/auth/login}" class="btn btn-outline btn-sm">Sign In</a>
+        <a sec:authorize="isAnonymous()" th:href="@{/auth/register}" class="btn btn-primary btn-sm">Get Started</a>
+        <form sec:authorize="isAuthenticated()" th:action="@{/auth/logout}" method="post" style="margin:0">
+            <button type="submit" class="btn btn-outline btn-sm">Logout</button>
+        </form>
+    </div>
+</nav>
+
+</body>
+</html>

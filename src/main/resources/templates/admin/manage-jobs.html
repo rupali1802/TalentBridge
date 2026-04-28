@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Manage Jobs')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+<div class="app-layout">
+    <aside th:replace="~{fragments/sidebar :: admin-sidebar}"></aside>
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1>Manage Jobs</h1>
+                <p>Monitor and manage all job postings on the platform</p>
+            </div>
+            <a th:href="@{/admin/post-job}" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="margin-right:0.5rem"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                Post New Job
+            </a>
+        </div>
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+        <div th:if="${jobs.isEmpty()}" class="empty-state"><h3>No jobs on the platform</h3><p>Jobs will appear here when employers post them.</p></div>
+
+        <div th:if="${!jobs.isEmpty()}" class="table-wrapper">
+            <table>
+                <thead><tr><th>Title</th><th>Employer</th><th>Location</th><th>Type</th><th>Posted</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>
+                    <tr th:each="job : ${jobs}">
+                        <td class="fw-600" th:text="${job.title}">Title</td>
+                        <td class="text-sm" th:text="${job.employer.fullName}">Employer</td>
+                        <td class="text-sm" th:text="${job.location}">Location</td>
+                        <td><span class="badge badge-primary" th:text="${job.jobType.displayName}">Type</span></td>
+                        <td class="text-sm" th:text="${#temporals.format(job.postedAt,'MMM dd, yyyy')}">Date</td>
+                        <td><span class="badge" th:classappend="${job.active ? 'badge-success' : 'badge-danger'}" th:text="${job.active ? 'Active' : 'Inactive'}">St</span></td>
+                        <td>
+                            <div style="display:flex;gap:0.4rem">
+                                <form th:action="@{/admin/toggle-job/{id}(id=${job.id})}" method="post" style="margin:0">
+                                    <button type="submit" class="btn btn-sm" th:classappend="${job.active ? 'btn-secondary' : 'btn-success'}" th:text="${job.active ? 'Deactivate' : 'Activate'}">Toggle</button>
+                                </form>
+                                <form th:action="@{/admin/delete-job/{id}(id=${job.id})}" method="post" style="margin:0">
+                                    <button type="submit" class="btn btn-sm btn-danger" data-confirm="Delete this job permanently?">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

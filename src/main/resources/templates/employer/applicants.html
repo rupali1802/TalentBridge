@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Applicants')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+<div class="app-layout">
+    <aside th:replace="~{fragments/sidebar :: employer-sidebar}"></aside>
+    <main class="main-content">
+        <a th:href="@{/employer/my-jobs}" class="btn btn-secondary btn-sm mb-2">← Back to My Jobs</a>
+        <div class="page-header"><h1>Applicants for: <span th:text="${job.title}">Job</span></h1>
+            <p th:text="${applications.size() + ' applicant(s)'}">0 applicants</p></div>
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+        <div th:if="${applications.isEmpty()}" class="empty-state"><h3>No applicants yet</h3><p>Candidates will appear here once they apply.</p></div>
+
+        <div th:if="${!applications.isEmpty()}" class="table-wrapper">
+            <table>
+                <thead><tr><th>Candidate</th><th>Email</th><th>Applied On</th><th>Resume</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>
+                    <tr th:each="app : ${applications}">
+                        <td class="fw-600" th:text="${app.user.fullName}">Name</td>
+                        <td class="text-sm" th:text="${app.user.email}">email</td>
+                        <td class="text-sm" th:text="${#temporals.format(app.appliedAt,'MMM dd, yyyy')}">Date</td>
+                        <td>
+                            <a th:if="${app.user.resumePath != null}" th:href="@{/uploads/{file}(file=${app.user.resumePath})}" target="_blank" class="btn btn-sm btn-outline">View Resume</a>
+                            <span th:if="${app.user.resumePath == null}" class="text-sm text-muted">No resume</span>
+                        </td>
+                        <td>
+                            <span class="badge"
+                                th:classappend="${app.status.name() == 'APPLIED'} ? 'badge-info' : (${app.status.name() == 'UNDER_REVIEW'} ? 'badge-warning' : (${app.status.name() == 'SHORTLISTED'} ? 'badge-success' : 'badge-danger'))"
+                                th:text="${app.status.displayName}">Status</span>
+                        </td>
+                        <td>
+                            <form th:action="@{/employer/update-status/{id}(id=${app.id})}" method="post" style="display:flex;gap:0.4rem;align-items:center">
+                                <select name="status" class="form-control" style="padding:0.35rem 0.5rem;font-size:0.8rem;width:auto">
+                                    <option th:each="s : ${statuses}" th:value="${s}" th:text="${s.displayName}" th:selected="${app.status == s}"></option>
+                                </select>
+                                <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Register')}"></head>
+<body>
+<div class="auth-wrapper">
+    <div class="auth-card" style="max-width:520px">
+        <h2>Create Account</h2>
+        <p class="subtitle">Join TalentBridge and start your journey</p>
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+        <form th:action="@{/auth/register}" th:object="${registerDTO}" method="post">
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" th:field="*{fullName}" class="form-control" placeholder="John Doe">
+                <div th:if="${#fields.hasErrors('fullName')}" class="form-error" th:errors="*{fullName}"></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" th:field="*{email}" class="form-control" placeholder="you@example.com">
+                <div th:if="${#fields.hasErrors('email')}" class="form-error" th:errors="*{email}"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" th:field="*{password}" class="form-control" placeholder="Min 6 characters">
+                    <div th:if="${#fields.hasErrors('password')}" class="form-error" th:errors="*{password}"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" th:field="*{confirmPassword}" class="form-control" placeholder="Repeat password">
+                    <div th:if="${#fields.hasErrors('confirmPassword')}" class="form-error" th:errors="*{confirmPassword}"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone (optional)</label>
+                <input type="text" th:field="*{phone}" class="form-control" placeholder="+91 98765 43210">
+            </div>
+            <div class="form-group">
+                <label class="form-label">I am a</label>
+                <select th:field="*{role}" class="form-control">
+                    <option value="">— Select Role —</option>
+                    <option th:each="r : ${roles}" th:value="${r}" th:text="${r.name() == 'STUDENT' ? 'Job Seeker (Student)' : 'Employer'}"></option>
+                </select>
+                <div th:if="${#fields.hasErrors('role')}" class="form-error" th:errors="*{role}"></div>
+            </div>
+            <div class="form-group" id="companyField" style="display:none">
+                <label class="form-label">Company Name</label>
+                <input type="text" th:field="*{company}" class="form-control" placeholder="Your Company">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block btn-lg">Create Account</button>
+        </form>
+        <div class="auth-footer">Already have an account? <a th:href="@{/auth/login}">Sign in</a></div>
+    </div>
+</div>
+<script>
+    document.querySelector('[name="role"]').addEventListener('change', function() {
+        document.getElementById('companyField').style.display = this.value === 'EMPLOYER' ? 'block' : 'none';
+    });
+</script>
+</body>
+</html>
